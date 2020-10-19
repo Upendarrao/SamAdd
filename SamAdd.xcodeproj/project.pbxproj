@@ -6,14 +6,30 @@
 	objectVersion = 50;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		FE34F7C82538799800B69428 /* SamAddAgg */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = FE34F7C92538799800B69428 /* Build configuration list for PBXAggregateTarget "SamAddAgg" */;
+			buildPhases = (
+				FE34F7CC25387A8100B69428 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = SamAddAgg;
+			productName = SamAddAgg;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		FE34F7C02538785C00B69428 /* SamAdd.h in Headers */ = {isa = PBXBuildFile; fileRef = FE34F7BE2538785C00B69428 /* SamAdd.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FE34F7C72538787D00B69428 /* SamAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE34F7C62538787D00B69428 /* SamAdd.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		FE34F7BB2538785C00B69428 /* SamAdd.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SamAdd.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE34F7BE2538785C00B69428 /* SamAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SamAdd.h; sourceTree = "<group>"; };
 		FE34F7BF2538785C00B69428 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FE34F7C62538787D00B69428 /* SamAdd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamAdd.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +62,7 @@
 		FE34F7BD2538785C00B69428 /* SamAdd */ = {
 			isa = PBXGroup;
 			children = (
+				FE34F7C62538787D00B69428 /* SamAdd.swift */,
 				FE34F7BE2538785C00B69428 /* SamAdd.h */,
 				FE34F7BF2538785C00B69428 /* Info.plist */,
 			);
@@ -95,6 +112,10 @@
 				TargetAttributes = {
 					FE34F7BA2538785C00B69428 = {
 						CreatedOnToolsVersion = 11.5;
+						LastSwiftMigration = 1150;
+					};
+					FE34F7C82538799800B69428 = {
+						CreatedOnToolsVersion = 11.5;
 					};
 				};
 			};
@@ -112,6 +133,7 @@
 			projectRoot = "";
 			targets = (
 				FE34F7BA2538785C00B69428 /* SamAdd */,
+				FE34F7C82538799800B69428 /* SamAddAgg */,
 			);
 		};
 /* End PBXProject section */
@@ -126,11 +148,32 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		FE34F7CC25387A8100B69428 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\n\nUNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal\n\n# make sure the output directory exists\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\n\n# Step 1. Build Device and Simulator versions\nxcodebuild -target \"SamAdd\" ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\nxcodebuild -target \"SamAdd\" -configuration ${CONFIGURATION} -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\n\n# Step 2. Copy the framework structure (from iphoneos build) to the universal folder\ncp -R \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/SamAdd.framework\" \"${UNIVERSAL_OUTPUTFOLDER}/\"\n\n# Step 3. Copy Swift modules from iphonesimulator build (if it exists) to the copied framework directory\nSIMULATOR_SWIFT_MODULES_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/SamAdd.framework/Modules/SamAdd.swiftmodule/.\"\nif [ -d \"${SIMULATOR_SWIFT_MODULES_DIR}\" ]; then\ncp -R \"${SIMULATOR_SWIFT_MODULES_DIR}\" \"${UNIVERSAL_OUTPUTFOLDER}/SamAdd.framework/Modules/SamAdd.swiftmodule\"\nfi\n\n# Step 4. Create universal binary file using lipo and place the combined executable in the copied framework directory\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/SamAdd.framework/SamAdd\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/SamAdd.framework/SamAdd\" \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/SamAdd.framework/SamAdd\"\n\n# Step 5. Convenience step to copy the framework to the project's directory\ncp -R \"${UNIVERSAL_OUTPUTFOLDER}/SamAdd.framework\" \"${PROJECT_DIR}\"\n\n# Step 6. Convenience step to open the project's directory in Finder\nopen \"${PROJECT_DIR}\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		FE34F7B72538785C00B69428 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FE34F7C72538787D00B69428 /* SamAdd.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,6 +303,7 @@
 		FE34F7C42538785C00B69428 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -275,6 +319,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = impressico.SamAdd;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -283,6 +328,7 @@
 		FE34F7C52538785C00B69428 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -303,6 +349,22 @@
 			};
 			name = Release;
 		};
+		FE34F7CA2538799800B69428 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		FE34F7CB2538799800B69428 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -320,6 +382,15 @@
 			buildConfigurations = (
 				FE34F7C42538785C00B69428 /* Debug */,
 				FE34F7C52538785C00B69428 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FE34F7C92538799800B69428 /* Build configuration list for PBXAggregateTarget "SamAddAgg" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FE34F7CA2538799800B69428 /* Debug */,
+				FE34F7CB2538799800B69428 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
